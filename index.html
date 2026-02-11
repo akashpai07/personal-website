@@ -132,6 +132,10 @@
             .nav-right .tab-link:last-child {
                 border-bottom: none;
             }
+            /* Loosen gallery tab spacing under nav on mobile */
+            #tab-gallery {
+                margin-top: 0;
+            }
         }
 
         /* Tab panels – only one visible at a time */
@@ -562,6 +566,29 @@
             a.setAttribute('rel', 'noopener noreferrer');
         });
 
+        var primaryTabLink = document.querySelector('nav > a.tab-link:first-child');
+        var TAB_LABELS = {
+            home: 'Akash Pai',
+            projects: 'Projects',
+            investing: 'Writing',
+            gallery: 'Life',
+            contact: 'Contact'
+        };
+        function updatePrimaryLabelForTab(tabId) {
+            if (!primaryTabLink) return;
+            var label = TAB_LABELS[tabId] || 'Akash Pai';
+            if (window.innerWidth <= 640) {
+                primaryTabLink.textContent = label;
+            } else {
+                primaryTabLink.textContent = 'Akash Pai';
+            }
+        }
+        window.addEventListener('resize', function() {
+            var activeLink = document.querySelector('.tab-link.active');
+            var tabId = activeLink ? activeLink.getAttribute('data-tab') || 'home' : 'home';
+            updatePrimaryLabelForTab(tabId);
+        });
+
         var navRight = document.querySelector('.nav-right');
         var navToggle = document.querySelector('.nav-toggle');
         if (navToggle && navRight) {
@@ -581,6 +608,7 @@
                     navToggle.setAttribute('aria-expanded', 'false');
                     navToggle.setAttribute('aria-label', 'Open menu');
                 }
+                updatePrimaryLabelForTab(tabId);
                 document.querySelectorAll('.tab-panel').forEach(function(panel) {
                     panel.classList.remove('active');
                 });
@@ -593,6 +621,7 @@
                 history.replaceState(null, '', '#' + tabId);
             });
         });
+        updatePrimaryLabelForTab('home');
         if (location.hash) {
             var tab = location.hash.slice(1);
             var link = document.querySelector('.tab-link[data-tab="' + tab + '"]');
