@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akash Pai</title>
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAKUlEQVR42u3SoREAAAgDMabt/hvABDgEIrl7X9EqAGCRpC8zwKcA4K0BUt+Dfe8iJhkAAAAASUVORK5CYII=" type="image/png" sizes="32x32">
+    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAKUlEQVR42u3SoREAAAgDMabt/hvABDgEIrl7X9EqAGCRpC8zwKcA4K0BUt+Dfe8iJhkAAAAASUVORK5CYII=" type="image/png">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAKUlEQVR42u3SoREAAAgDMabt/hvABDgEIrl7X9EqAGCRpC8zwKcA4K0BUt+Dfe8iJhkAAAAASUVORK5CYII=" type="image/png">
+    <style>
+        /* PRIMITIVE THEME CONFIGURATION
+           --------------------------------------------------
+           This CSS is intentionally bare-bones. 
+        */
+
+        :root {
+            /* Change to "Courier New", Courier, monospace for a terminal look */
+            /* Change to "Times New Roman", serif for an academic/paper look */
+            --font-main: "Times New Roman", Times, serif; 
+            
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --link-color: #0000EE; /* Standard web blue */
+            --link-visited: #551A8B; /* Standard visited purple */
+            --max-width: 650px; /* Keeps text readable like a book */
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.4;
+            max-width: var(--max-width);
+            margin: 40px auto; /* Centers the content */
+            padding: 0 20px;
+        }
+
+        /* HEADER STYLES */
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #000; /* Simple divider */
+            padding-bottom: 10px;
+        }
+
+        nav {
+            margin-top: 0;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            width: 100%;
+        }
+
+        nav a.tab-link {
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        nav > a.tab-link:first-child {
+            white-space: nowrap;
+        }
+        .nav-spacer {
+            flex: 1;
+            min-width: 0;
+        }
+        .nav-right {
+            display: flex;
+            gap: 28px;
+            align-items: baseline;
+        }
+
+        /* Tab panels – only one visible at a time */
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* CONTENT STYLES */
+        h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* LISTS (The bread and butter of primitive sites) */
+        ul {
+            list-style-type: none; /* Removes bullets for a cleaner look */
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        /* Date column styling for lists */
+        .date {
+            min-width: 120px;
+            color: #666;
+            font-variant-numeric: tabular-nums; /* Aligns numbers nicely */
+        }
+
+        /* LINKS (content only; nav tabs use rules below) */
+        main a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        main a:visited {
+            color: #888;
+        }
+
+        main a:hover {
+            color: var(--text-color);
+        }
+
+        /* Nav tab colors: inactive = gray, active = black */
+        nav a.tab-link {
+            color: #666;
+        }
+        nav a.tab-link.active {
+            color: #000;
+            border-bottom: 1px solid transparent;
+        }
+        nav a.tab-link:hover {
+            color: #000;
+        }
+
+        .contact-line {
+            margin-bottom: 12px;
+        }
+        .contact-line:last-child {
+            margin-bottom: 0;
+        }
+        a.x-icon,
+        a.linkedin-icon {
+            display: inline-block;
+            line-height: 0;
+        }
+        a.x-icon svg,
+        a.linkedin-icon svg {
+            vertical-align: middle;
+        }
+        a.linkedin-icon {
+            margin-left: 16px;
+        }
+        .email-reveal-trigger {
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .email-reveal-trigger:hover {
+            color: #666;
+        }
+
+        /* UTILITY */
+        .mono {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9em;
+        }
+        
+        #tab-home,
+        #tab-projects,
+        #tab-investing,
+        #tab-contact {
+            margin-top: -20px;
+        }
+        #tab-gallery {
+            margin-top: -30px;
+        }
+        #tab-gallery section {
+            margin-top: 0;
+        }
+        .gallery-controls {
+            margin-top: 0;
+            margin-bottom: 4px;
+            text-align: right;
+        }
+        .shuffle-btn {
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+            color: #666;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .shuffle-btn:hover {
+            color: var(--text-color);
+        }
+        @keyframes shuffle-fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes shuffle-fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .shuffle-btn.shuffle-out {
+            animation: shuffle-fade-out 1s ease forwards;
+            pointer-events: none;
+        }
+        .shuffle-btn.shuffle-in {
+            animation: shuffle-fade-in 1s ease forwards;
+        }
+        /* Gallery: 3 columns, 4 rows, fixed-size cells */
+        #tab-gallery .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 4px;
+        }
+        #tab-gallery .gallery figure {
+            margin: 0;
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+        #tab-gallery .gallery .gallery-slot {
+            display: block;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+        #tab-gallery #gallery-pool {
+            display: none;
+        }
+        #tab-gallery .gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border: 1px solid #ddd;
+            filter: grayscale(100%);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px dashed #999;
+            margin: 40px 0;
+        }
+        #tab-projects .project-entry {
+            margin-bottom: 28px;
+        }
+        #tab-projects .project-entry:last-child {
+            margin-bottom: 0;
+        }
+        #tab-projects .project-year {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: normal;
+            color: #666;
+            letter-spacing: 0.02em;
+            margin-bottom: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+        #tab-projects .project-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0 0 6px 0;
+        }
+        #tab-projects .project-desc {
+            margin: 0 0 0 0;
+            padding-left: 0;
+        }
+
+        footer {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #888;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="#" class="tab-link active" data-tab="home">Akash Pai</a>
+            <span class="nav-spacer"></span>
+            <div class="nav-right">
+                <a href="#" class="tab-link" data-tab="projects">Projects</a>
+                <a href="#" class="tab-link" data-tab="investing">Writing</a>
+                <a href="#" class="tab-link" data-tab="gallery">Life</a>
+                <a href="#" class="tab-link" data-tab="contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="tab-home" class="tab-panel active">
+            <section>
+                <p>
+                    Hi, I'm Akash and I'm studying EE at Stanford. I design and build medical devices.
+                </p>
+                <p>
+                    I work on wearable genomics at the <a href="https://krishnanlab.stanford.edu">Krishnan Lab</a> and ingestible devices at the <a href="https://yuhanleelab.com">Innovative Biomaterials Lab</a>.
+                    I hold broad interests in neurotech, medtech equities, and next-gen compute.
+                </p>
+            </section>
+        </div>
+
+        <div id="tab-gallery" class="tab-panel">
+            <section>
+                <p class="gallery-controls">
+                    <button type="button" id="shuffle-gallery" class="shuffle-btn">Shuffle</button>
+                </p>
+                <div id="gallery-container" class="gallery"></div>
+                <div id="gallery-pool" aria-hidden="true"></div>
+            </section>
+        </div>
+
+        <div id="tab-projects" class="tab-panel">
+            <section>
+                <div class="project-entry">
+                    <span class="project-year">2026</span>
+                    <h3 class="project-title">On-body Genotyping</h3>
+                    <p class="project-desc">Coming soon... (human trials)</p>
+                </div>
+                <div class="project-entry">
+                    <span class="project-year">2026</span>
+                    <h3 class="project-title">PMICs for Wireless Power Transfer</h3>
+                    <p class="project-desc">Coming soon...</p>
+                </div>
+                <div class="project-entry">
+                    <span class="project-year">2024–2025</span>
+                    <h3 class="project-title">Ingestible Motility Restoration</h3>
+                    <p class="project-desc">Developed an ingestible bidirectional neural interface for recording and stimulating of small intestinal motility. Increased contraction frequency in vivo (pigs) by 89% and food transit distance by 3.68x. Proof-of-concept large-form device tested in an IRB-approved human trial.</p>
+                </div>
+                <div class="project-entry">
+                    <span class="project-year">2023</span>
+                    <h3 class="project-title">ML-Designed AAVs</h3>
+                    <p class="project-desc">Used LSTM neural networks and machine learning-guided mutagenesis to design adeno-associated virus capsids that displayed a predicted ~26x increase in viral yield from the wild-type in production viability. Also used ML to design non-heaptotoxic AAVs.</p>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-investing" class="tab-panel">
+            <section>
+                <p>Medtech equities. Coming soon...</p>
+            </section>
+        </div>
+
+        <div id="tab-contact" class="tab-panel">
+            <section>
+                <p class="mono contact-line">
+                    <span id="email-reveal-trigger" class="email-reveal-trigger" role="button" tabindex="0">[click to reveal email]</span>
+                    <a id="email-reveal-link" href="mailto:akashpai@stanford.edu" class="email-reveal-link" style="display: none;">akashpai [at] stanford [dot] edu</a>
+                </p>
+                <p class="contact-line">
+                    <a href="https://x.com/akashashishpai" class="x-icon" aria-label="X"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                    <a href="https://linkedin.com/in/akash-pai" class="linkedin-icon" aria-label="LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>PST <span id="pst-clock"></span></p>
+    </footer>
+
+    <script>
+        // Gallery loads images from Photos/ — browsers block this when you open index.html as a file.
+        // Run a local server: in Terminal, cd to the folder with index.html, then run:
+        //   python3 -m http.server 8000
+        // Then open: http://localhost:8000/index.html
+        var GALLERY_PHOTOS_RAW = [
+            '100_0088.JPG', 'FullSizeRender.jpg', 'IMG_1131.jpg', 'IMG_1457_Original.JPEG', 'IMG_1706.jpg',
+            'IMG_1740.jpg', 'IMG_3031.jpg', 'IMG_3034.jpg', 'IMG_3759.jpg', 'IMG_4162.jpg', 'IMG_4243.jpg',
+            'IMG_4263.jpg', 'IMG_4594.JPG', 'IMG_4697.JPEG', 'IMG_4842.JPG', 'IMG_4957.JPG', 'IMG_5160.jpg',
+            'IMG_5166.JPG', 'IMG_5189.JPG', 'IMG_5270.jpg', 'IMG_5277.jpg', 'IMG_5319.JPG', 'IMG_5609.JPG',
+            'IMG_5823.JPG', 'IMG_5881.JPEG', 'IMG_5958.JPG', 'IMG_6170.JPG', 'IMG_6441.jpg', 'IMG_6850.JPG',
+            'IMG_6975.JPG', 'IMG_7010.JPG', 'IMG_9657.JPG', 'IMG_9718.JPG', 'IMG_9781.JPG'
+        ];
+        var GALLERY_FOLDER = 'Photos/';
+        var GALLERY_SIZE = 12;
+
+        function getDisplayablePhotos() {
+            return GALLERY_PHOTOS_RAW.filter(function(name) {
+                var lower = name.toLowerCase();
+                return lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png');
+            }).map(function(name) { return GALLERY_FOLDER + name; });
+        }
+        var GALLERY_PHOTOS = getDisplayablePhotos();
+
+        function shuffleArray(arr) {
+            var out = arr.slice();
+            for (var i = out.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = out[i];
+                out[i] = out[j];
+                out[j] = tmp;
+            }
+            return out;
+        }
+
+        (function() {
+            var photos = getDisplayablePhotos();
+            var container = document.getElementById('gallery-container');
+            var pool = document.getElementById('gallery-pool');
+            if (!container || !pool || photos.length === 0) return;
+
+            var slots = [];
+            for (var i = 0; i < GALLERY_SIZE; i++) {
+                var fig = document.createElement('figure');
+                var slot = document.createElement('div');
+                slot.className = 'gallery-slot';
+                fig.appendChild(slot);
+                container.appendChild(fig);
+                slots.push(slot);
+            }
+            photos.forEach(function(src, idx) {
+                var img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Photo ' + (idx + 1);
+                img.setAttribute('data-idx', idx);
+                pool.appendChild(img);
+            });
+            function shuffleGallery() {
+                var shuffled = shuffleArray(photos.map(function(_, i) { return i; }));
+                var toShow = shuffled.slice(0, GALLERY_SIZE);
+                for (var i = 0; i < slots.length; i++) {
+                    if (slots[i].firstChild) pool.appendChild(slots[i].firstChild);
+                }
+                toShow.forEach(function(photoIdx, slotIndex) {
+                    var img = document.querySelector('#tab-gallery img[data-idx="' + photoIdx + '"]');
+                    if (img) slots[slotIndex].appendChild(img);
+                });
+            }
+            var shuffleBtn = document.getElementById('shuffle-gallery');
+            shuffleBtn.addEventListener('click', function() {
+                shuffleBtn.classList.remove('shuffle-in');
+                shuffleBtn.classList.add('shuffle-out');
+                setTimeout(function() { shuffleGallery(); }, 50);
+                setTimeout(function() {
+                    shuffleBtn.classList.remove('shuffle-out');
+                    shuffleBtn.classList.add('shuffle-in');
+                    setTimeout(function() {
+                        shuffleBtn.classList.remove('shuffle-in');
+                    }, 1000);
+                }, 6000);
+            });
+            shuffleGallery();
+        })();
+
+        (function() {
+            var trigger = document.getElementById('email-reveal-trigger');
+            var link = document.getElementById('email-reveal-link');
+            if (trigger && link) {
+                function reveal() {
+                    trigger.style.display = 'none';
+                    link.style.display = 'inline';
+                }
+                trigger.addEventListener('click', reveal);
+                trigger.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        reveal();
+                    }
+                });
+            }
+        })();
+
+        function updatePstClock() {
+            var el = document.getElementById('pst-clock');
+            if (el) {
+                var now = new Date();
+                el.textContent = now.toLocaleTimeString('en-US', { timeZone: 'America/Los_Angeles', hour12: true, hour: 'numeric', minute: '2-digit', second: '2-digit' });
+            }
+        }
+        updatePstClock();
+        setInterval(updatePstClock, 1000);
+
+        document.querySelectorAll('a[href^="http"]').forEach(function(a) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+        });
+
+        document.querySelectorAll('.tab-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                var tabId = this.getAttribute('data-tab');
+                if (!tabId) return;
+                document.querySelectorAll('.tab-panel').forEach(function(panel) {
+                    panel.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-link').forEach(function(l) {
+                    l.classList.remove('active');
+                });
+                var panel = document.getElementById('tab-' + tabId);
+                if (panel) panel.classList.add('active');
+                this.classList.add('active');
+                history.replaceState(null, '', '#' + tabId);
+            });
+        });
+        if (location.hash) {
+            var tab = location.hash.slice(1);
+            var link = document.querySelector('.tab-link[data-tab="' + tab + '"]');
+            if (link) link.click();
+        }
+    </script>
+</body>
+</html>
