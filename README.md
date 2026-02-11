@@ -22,7 +22,8 @@ git add .
 git commit -m "Initial commit: personal site"
 
 # Create the repo on GitHub first (see below), then:
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+# Replace YOUR_GITHUB_USERNAME with your real GitHub username (e.g. akashashishpai)
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/personal-website.git
 git branch -M main
 git push -u origin main
 ```
