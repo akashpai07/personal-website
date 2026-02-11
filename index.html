@@ -71,6 +71,69 @@
             align-items: baseline;
         }
 
+        /* Mobile: hide hamburger by default */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 0;
+            line-height: 0;
+            margin-left: auto;
+        }
+        .nav-toggle svg {
+            display: block;
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+        }
+        .nav-toggle:hover {
+            color: var(--text-color);
+        }
+
+        /* Mobile nav */
+        @media (max-width: 640px) {
+            body {
+                margin: 20px auto;
+                padding: 0 16px;
+            }
+            header {
+                margin-bottom: 24px;
+                padding-bottom: 0;
+            }
+            nav {
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            .nav-spacer {
+                display: none;
+            }
+            .nav-toggle {
+                display: block;
+                color: #666;
+            }
+            .nav-right {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 0;
+                padding: 12px 0 0 0;
+                border-top: 1px solid #eee;
+                margin-top: 10px;
+            }
+            .nav-right.open {
+                display: flex;
+            }
+            .nav-right .tab-link {
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+            .nav-right .tab-link:last-child {
+                border-bottom: none;
+            }
+        }
+
         /* Tab panels – only one visible at a time */
         .tab-panel {
             display: none;
@@ -247,6 +310,12 @@
             border: 1px solid #ddd;
             filter: grayscale(100%);
         }
+        @media (max-width: 640px) {
+            #tab-gallery .gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
 
         hr {
             border: 0;
@@ -292,6 +361,9 @@
         <nav>
             <a href="#" class="tab-link active" data-tab="home">Akash Pai</a>
             <span class="nav-spacer"></span>
+            <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
             <div class="nav-right">
                 <a href="#" class="tab-link" data-tab="projects">Projects</a>
                 <a href="#" class="tab-link" data-tab="investing">Writing</a>
@@ -490,11 +562,25 @@
             a.setAttribute('rel', 'noopener noreferrer');
         });
 
+        var navRight = document.querySelector('.nav-right');
+        var navToggle = document.querySelector('.nav-toggle');
+        if (navToggle && navRight) {
+            navToggle.addEventListener('click', function() {
+                var open = navRight.classList.toggle('open');
+                navToggle.setAttribute('aria-expanded', open);
+                navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            });
+        }
         document.querySelectorAll('.tab-link').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 var tabId = this.getAttribute('data-tab');
                 if (!tabId) return;
+                if (navRight) navRight.classList.remove('open');
+                if (navToggle) {
+                    navToggle.setAttribute('aria-expanded', 'false');
+                    navToggle.setAttribute('aria-label', 'Open menu');
+                }
                 document.querySelectorAll('.tab-panel').forEach(function(panel) {
                     panel.classList.remove('active');
                 });
