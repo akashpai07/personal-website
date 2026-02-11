@@ -254,8 +254,11 @@
         #tab-contact {
             margin-top: -20px;
         }
-        #tab-gallery {
-            margin-top: -30px;
+        /* Negative margin only on desktop so mobile spacing isn’t overridden */
+        @media (min-width: 641px) {
+            #tab-gallery {
+                margin-top: -30px;
+            }
         }
         #tab-gallery section {
             margin-top: 0;
