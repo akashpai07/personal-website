@@ -302,26 +302,26 @@
         .shuffle-btn.shuffle-in {
             animation: shuffle-fade-in 1s ease forwards;
         }
-        /* Gallery: justified rows — uniform row height, photos keep their aspect ratio */
+        /* Gallery: balanced justified rows — every row is full and full-width, photos
+           in a row share one height, and nothing is cropped: each photo's width share
+           equals its aspect ratio, so height = rowWidth / (sum of ratios) for all. */
         #tab-gallery .gallery {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 10px;
             margin-top: 4px;
         }
+        #tab-gallery .gallery .gallery-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
         #tab-gallery .gallery figure {
             margin: 0;
-            height: 200px;
-            flex-grow: 1;
-        }
-        #tab-gallery .gallery .gallery-spacer {
-            flex-grow: 1000;
-            height: 0;
-        }
-        #tab-gallery .gallery .gallery-slot {
-            display: block;
-            width: 100%;
-            height: 100%;
+            flex-grow: calc(var(--ar, 1) * 100);
+            flex-basis: 0;
+            min-width: 0;
+            aspect-ratio: var(--ar, 1);
         }
         #tab-gallery #gallery-pool {
             display: none;
@@ -332,13 +332,15 @@
             object-fit: cover;
             display: block;
             border: 1px solid #ddd;
+            box-sizing: border-box;
+            filter: grayscale(100%);
         }
         @media (max-width: 640px) {
             #tab-gallery .gallery {
                 gap: 8px;
             }
-            #tab-gallery .gallery figure {
-                height: 130px;
+            #tab-gallery .gallery .gallery-row {
+                gap: 8px;
             }
         }
 
@@ -526,59 +528,167 @@
             var pool = document.getElementById('gallery-pool');
             if (!container || !pool || photos.length === 0) return;
 
-            var slots = [];
-            for (var i = 0; i < GALLERY_SIZE; i++) {
-                var fig = document.createElement('figure');
-                var slot = document.createElement('div');
-                slot.className = 'gallery-slot';
-                fig.appendChild(slot);
-                container.appendChild(fig);
-                slots.push(slot);
-            }
-            // Spacer stops the last row's photos from stretching to fill the full width.
-            var spacer = document.createElement('div');
-            spacer.className = 'gallery-spacer';
-            container.appendChild(spacer);
-
-            // Justified rows: each figure's flex share matches its photo's aspect ratio.
-            function sizeSlotForImage(slot, img) {
-                var fig = slot.parentNode;
-                function apply() {
-                    var ar = (img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : 1;
-                    fig.style.flexGrow = ar;
-                    fig.style.flexBasis = (ar * 200) + 'px';
-                }
-                if (img.complete && img.naturalWidth) apply();
-                else img.addEventListener('load', apply, { once: true });
-            }
-            photos.forEach(function(src, idx) {
+            var allImgs = photos.map(function(src, idx) {
                 var img = document.createElement('img');
                 img.decoding = 'async';
-                img.src = encodeURI(src);
                 img.alt = 'Photo ' + (idx + 1);
                 img.setAttribute('data-idx', idx);
+                img.setAttribute('data-src', encodeURI(src));
+                img.addEventListener('error', function() { img.setAttribute('data-failed', '1'); }, { once: true });
                 pool.appendChild(img);
+                return img;
             });
-            function shuffleGallery() {
-                var shuffled = shuffleArray(photos.map(function(_, i) { return i; }));
-                var toShow = shuffled.slice(0, GALLERY_SIZE);
-                for (var i = 0; i < slots.length; i++) {
-                    if (slots[i].firstChild) pool.appendChild(slots[i].firstChild);
-                }
-                toShow.forEach(function(photoIdx, slotIndex) {
-                    var img = document.querySelector('#tab-gallery img[data-idx="' + photoIdx + '"]');
-                    if (img) {
-                        slots[slotIndex].appendChild(img);
-                        sizeSlotForImage(slots[slotIndex], img);
-                    }
+
+            function startLoading(img) {
+                if (!img.getAttribute('src')) img.src = img.getAttribute('data-src');
+            }
+            function isUsable(img) {
+                return !img.getAttribute('data-failed');
+            }
+            function isReady(img) {
+                return img.complete && img.naturalWidth > 0;
+            }
+            function aspectOf(img) {
+                return isReady(img) ? img.naturalWidth / img.naturalHeight : 1;
+            }
+            function whenSettled(img) {
+                return new Promise(function(resolve) {
+                    startLoading(img);
+                    if (img.complete) return resolve();
+                    var timer = setTimeout(resolve, 10000);
+                    function done() { clearTimeout(timer); resolve(); }
+                    img.addEventListener('load', done, { once: true });
+                    img.addEventListener('error', done, { once: true });
                 });
             }
+            // Deterministic pseudo-random order so re-laying-out the same pick (e.g.
+            // on a breakpoint change) never rearranges photos — only Shuffle does.
+            function hashIdx(idx) {
+                var h = Math.imul(idx + 1, 2654435761);
+                return ((h ^ (h >>> 16)) >>> 0);
+            }
+            function columnsForViewport() {
+                return window.innerWidth <= 640 ? 2 : 3;
+            }
+
+            var currentPick = null;
+            var generation = 0;
+
+            function layout() {
+                if (!currentPick) return;
+                var cols = columnsForViewport();
+                var rowCount = Math.max(1, Math.floor(currentPick.length / cols));
+                container.querySelectorAll('img').forEach(function(img) { pool.appendChild(img); });
+                container.innerHTML = '';
+
+                var entries = currentPick.map(function(idx) {
+                    return { idx: idx, img: allImgs[idx], ar: aspectOf(allImgs[idx]) };
+                });
+
+                // Balance rows so their heights come out similar: widest photos first,
+                // each into the row with the smallest aspect-ratio total so far.
+                entries.sort(function(a, b) { return b.ar - a.ar; });
+                var rows = [];
+                for (var r = 0; r < rowCount; r++) rows.push({ sum: 0, entries: [] });
+                entries.forEach(function(entry) {
+                    var target = null;
+                    rows.forEach(function(row) {
+                        if (row.entries.length >= cols) return;
+                        if (!target || row.sum < target.sum) target = row;
+                    });
+                    if (!target) return;
+                    target.entries.push(entry);
+                    target.sum += entry.ar;
+                });
+
+                rows.forEach(function(row) {
+                    row.entries.sort(function(a, b) { return hashIdx(a.idx) - hashIdx(b.idx); });
+                });
+                rows.filter(function(row) { return row.entries.length > 0; })
+                    .sort(function(a, b) { return hashIdx(a.entries[0].idx) - hashIdx(b.entries[0].idx); })
+                    .forEach(function(row) {
+                        var rowEl = document.createElement('div');
+                        rowEl.className = 'gallery-row';
+                        row.entries.forEach(function(entry) {
+                            var fig = document.createElement('figure');
+                            fig.style.setProperty('--ar', entry.ar);
+                            fig.appendChild(entry.img);
+                            rowEl.appendChild(fig);
+                        });
+                        container.appendChild(rowEl);
+                    });
+                warmPool();
+            }
+
+            // Only lay out once every picked photo has finished loading, swapping any
+            // that failed for healthy ones. The generation counter makes overlapping
+            // shuffles/resizes safe: only the most recent request may touch the DOM.
+            function scheduleLayout() {
+                if (!currentPick) return;
+                var gen = ++generation;
+                (function attempt() {
+                    if (gen !== generation) return;
+                    Promise.all(currentPick.map(function(idx) { return whenSettled(allImgs[idx]); })).then(function() {
+                        if (gen !== generation) return;
+                        if (currentPick.some(function(idx) { return !isReady(allImgs[idx]); })) {
+                            var inPick = {};
+                            currentPick.forEach(function(idx) { inPick[idx] = true; });
+                            var candidates = shuffleArray(allImgs.map(function(_, i) { return i; })).filter(function(i) {
+                                return !inPick[i] && isUsable(allImgs[i]);
+                            });
+                            var replaced = false;
+                            currentPick = currentPick.map(function(idx) {
+                                if (isReady(allImgs[idx])) return idx;
+                                var sub = candidates.shift();
+                                if (sub === undefined) return idx;
+                                replaced = true;
+                                return sub;
+                            });
+                            if (replaced) return attempt();
+                        }
+                        layout();
+                    });
+                })();
+            }
+
+            function shuffleGallery() {
+                var order = shuffleArray(photos.map(function(_, i) { return i; })).filter(function(i) {
+                    return isUsable(allImgs[i]);
+                });
+                // Keep the count divisible by both 2 and 3 columns so rows stay full.
+                var target = Math.min(GALLERY_SIZE, order.length);
+                target -= target % 6;
+                if (target === 0) target = Math.min(GALLERY_SIZE, order.length);
+                currentPick = order.slice(0, target);
+                scheduleLayout();
+            }
+
+            // After the first layout is on screen, quietly load the rest of the pool
+            // so later shuffles appear instantly.
+            var warmed = false;
+            function warmPool() {
+                if (warmed) return;
+                warmed = true;
+                setTimeout(function() { allImgs.forEach(startLoading); }, 1500);
+            }
+
+            var lastCols = columnsForViewport();
+            window.addEventListener('resize', function() {
+                var cols = columnsForViewport();
+                if (cols !== lastCols) {
+                    lastCols = cols;
+                    scheduleLayout();
+                }
+            });
             var shuffleBtn = document.getElementById('shuffle-gallery');
             shuffleBtn.addEventListener('click', function() {
+                if (shuffleBtn.disabled) return;
+                shuffleBtn.disabled = true;
                 shuffleBtn.classList.remove('shuffle-in');
                 shuffleBtn.classList.add('shuffle-out');
                 setTimeout(function() { shuffleGallery(); }, 50);
                 setTimeout(function() {
+                    shuffleBtn.disabled = false;
                     shuffleBtn.classList.remove('shuffle-out');
                     shuffleBtn.classList.add('shuffle-in');
                     setTimeout(function() {
