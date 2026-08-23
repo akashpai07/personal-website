@@ -473,15 +473,29 @@
         // Run a local server: in Terminal, cd to the folder with index.html, then run:
         //   python3 -m http.server 8000
         // Then open: http://localhost:8000/index.html
+        // Filenames in Photos/thumbs/ — resized copies of the originals in Photos/.
+        // To add a photo: drop the original in Photos/, then regenerate its thumb:
+        //   sips -s format jpeg -s formatOptions 70 -Z 1000 Photos/NAME.png --out "Photos/thumbs/NAME.jpg"
+        // and add 'NAME.jpg' to this list.
         var GALLERY_PHOTOS_RAW = [
-            '100_0088.JPG', 'FullSizeRender.jpg', 'IMG_1131.jpg', 'IMG_1457_Original.JPEG', 'IMG_1706.jpg',
-            'IMG_1740.jpg', 'IMG_3031.jpg', 'IMG_3034.jpg', 'IMG_3759.jpg', 'IMG_4162.jpg', 'IMG_4243.jpg',
-            'IMG_4263.jpg', 'IMG_4594.JPG', 'IMG_4697.JPEG', 'IMG_4842.JPG', 'IMG_4957.JPG', 'IMG_5160.jpg',
-            'IMG_5166.JPG', 'IMG_5189.JPG', 'IMG_5270.jpg', 'IMG_5277.jpg', 'IMG_5319.JPG', 'IMG_5609.JPG',
-            'IMG_5823.JPG', 'IMG_5881.JPEG', 'IMG_5958.JPG', 'IMG_6170.JPG', 'IMG_6441.jpg', 'IMG_6850.JPG',
-            'IMG_6975.JPG', 'IMG_7010.JPG', 'IMG_9657.JPG', 'IMG_9718.JPG', 'IMG_9781.JPG'
+            '100_0088.jpg', '119A0E56-7391-4947-A43E-9B543D7CC9DC.jpg', '546787F7-0235-4D3E-8BEE-10C9CFF3FCCA.jpg',
+            'D549A926-8501-400D-B960-02833C650E16.jpg', 'F96F3F9C-FE7E-47EF-AF48-13582F32358E.jpg',
+            'FC3F008B-6265-4943-B798-EE1BC1B9E05A.jpg', 'FullSizeRender.jpg', 'IMG_1131.jpg',
+            'IMG_1457_Original.jpg', 'IMG_1706.jpg', 'IMG_1740.jpg', 'IMG_3031.jpg', 'IMG_3034.jpg',
+            'IMG_3759.jpg', 'IMG_4162.jpg', 'IMG_4243.jpg', 'IMG_4263.jpg', 'IMG_4594.jpg', 'IMG_4697.jpg',
+            'IMG_4842.jpg', 'IMG_4957.jpg', 'IMG_5160.jpg', 'IMG_5166.jpg', 'IMG_5189.jpg', 'IMG_5270.jpg',
+            'IMG_5277.jpg', 'IMG_5319.jpg', 'IMG_5609.jpg', 'IMG_5823.jpg', 'IMG_5881.jpg', 'IMG_5958.jpg',
+            'IMG_6170.jpg', 'IMG_6441.jpg', 'IMG_6850.jpg', 'IMG_6975.jpg', 'IMG_7010.jpg', 'IMG_9657.jpg',
+            'IMG_9718.jpg', 'IMG_9781.jpg',
+            'Screenshot-2026-08-22-at-5.16.38-PM.jpg', 'Screenshot-2026-08-22-at-5.17.18-PM.jpg',
+            'Screenshot-2026-08-22-at-5.17.45-PM.jpg', 'Screenshot-2026-08-22-at-5.18.04-PM.jpg',
+            'Screenshot-2026-08-22-at-5.18.10-PM.jpg', 'Screenshot-2026-08-22-at-5.18.16-PM.jpg',
+            'Screenshot-2026-08-22-at-5.18.20-PM.jpg', 'Screenshot-2026-08-22-at-5.18.26-PM.jpg',
+            'Screenshot-2026-08-22-at-5.18.36-PM.jpg', 'Screenshot-2026-08-22-at-5.18.39-PM.jpg',
+            'Screenshot-2026-08-22-at-5.18.41-PM.jpg', 'Screenshot-2026-08-22-at-5.19.03-PM.jpg',
+            'Screenshot-2026-08-22-at-5.19.15-PM.jpg'
         ];
-        var GALLERY_FOLDER = 'Photos/';
+        var GALLERY_FOLDER = 'Photos/thumbs/';
         var GALLERY_SIZE = 12;
 
         function getDisplayablePhotos() {
@@ -520,7 +534,8 @@
             }
             photos.forEach(function(src, idx) {
                 var img = document.createElement('img');
-                img.src = src;
+                img.decoding = 'async';
+                img.src = encodeURI(src);
                 img.alt = 'Photo ' + (idx + 1);
                 img.setAttribute('data-idx', idx);
                 pool.appendChild(img);
