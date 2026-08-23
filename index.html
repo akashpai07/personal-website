@@ -302,40 +302,34 @@
         .shuffle-btn.shuffle-in {
             animation: shuffle-fade-in 1s ease forwards;
         }
-        /* Gallery: 3 columns, 4 rows, fixed-size cells */
+        /* Gallery: masonry columns, photos keep their natural aspect ratio */
         #tab-gallery .gallery {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            column-count: 3;
+            column-gap: 12px;
             margin-top: 4px;
         }
         #tab-gallery .gallery figure {
-            margin: 0;
-            aspect-ratio: 1;
-            overflow: hidden;
+            margin: 0 0 12px 0;
+            break-inside: avoid;
         }
         #tab-gallery .gallery .gallery-slot {
             display: block;
             width: 100%;
-            height: 100%;
-            min-height: 0;
-            overflow: hidden;
         }
         #tab-gallery #gallery-pool {
             display: none;
         }
         #tab-gallery .gallery img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
             display: block;
             border: 1px solid #ddd;
             filter: grayscale(100%);
         }
         @media (max-width: 640px) {
             #tab-gallery .gallery {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
+                column-count: 2;
+                column-gap: 10px;
             }
         }
 
