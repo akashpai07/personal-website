@@ -140,11 +140,13 @@
                 display: block;
             }
             /* Space between nav and Shuffle button (padding so it’s not collapsed by margins) */
-            #tab-gallery {
+            #tab-gallery,
+            #tab-investing {
                 margin-top: 0;
                 padding-top: 10px;
             }
-            #tab-gallery .gallery-controls {
+            #tab-gallery .gallery-controls,
+            #tab-investing .reflections-controls {
                 margin-top: 0;
             }
             /* Don’t show current tab in the dropdown (you’re already on it) */
@@ -220,30 +222,27 @@
             color: #000;
         }
 
-        .contact-line {
-            margin-bottom: 12px;
+        /* Footer social icons (home page only) */
+        #footer-social {
+            margin-left: 12px;
         }
-        .contact-line:last-child {
-            margin-bottom: 0;
-        }
-        a.x-icon,
-        a.linkedin-icon {
+        #footer-social a {
+            color: #888;
             display: inline-block;
             line-height: 0;
+            vertical-align: -2px;
         }
-        a.x-icon svg,
-        a.linkedin-icon svg {
-            vertical-align: middle;
+        #footer-social a:hover {
+            color: var(--text-color);
         }
-        a.linkedin-icon {
-            margin-left: 16px;
+        #footer-social a.linkedin-icon {
+            margin-left: 10px;
         }
-        .email-reveal-trigger {
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .email-reveal-trigger:hover {
-            color: #666;
+        #footer-social .footer-flag {
+            height: 13px;
+            width: auto;
+            vertical-align: -2px;
+            margin-left: 12px;
         }
 
         /* UTILITY */
@@ -253,10 +252,26 @@
         }
         
         #tab-home,
-        #tab-projects,
-        #tab-investing,
-        #tab-contact {
+        #tab-projects {
             margin-top: -20px;
+        }
+        /* Reflections: shuffle control mirrors the Life tab */
+        @media (min-width: 641px) {
+            #tab-investing {
+                margin-top: -30px;
+            }
+        }
+        #tab-investing section {
+            margin-top: 0;
+        }
+        .reflections-controls {
+            margin-top: 0;
+            margin-bottom: 4px;
+            text-align: right;
+        }
+        #reflections-list li {
+            display: list-item;
+            margin-bottom: 8px;
         }
         /* Negative margin only on desktop so mobile spacing isn’t overridden */
         @media (min-width: 641px) {
@@ -394,9 +409,8 @@
             <div class="nav-right">
                 <a href="#" class="tab-link" data-tab="home">Akash Pai</a>
                 <a href="#" class="tab-link" data-tab="projects">Projects</a>
-                <a href="#" class="tab-link" data-tab="investing">Writing</a>
+                <a href="#" class="tab-link" data-tab="investing">Reflections</a>
                 <a href="#" class="tab-link" data-tab="gallery">Life</a>
-                <a href="#" class="tab-link" data-tab="contact">Contact</a>
             </div>
         </nav>
     </header>
@@ -451,26 +465,21 @@
 
         <div id="tab-investing" class="tab-panel">
             <section>
-                <p>don't publish your writing</p>
-            </section>
-        </div>
-
-        <div id="tab-contact" class="tab-panel">
-            <section>
-                <p class="mono contact-line">
-                    <span id="email-reveal-trigger" class="email-reveal-trigger" role="button" tabindex="0">[click to reveal email]</span>
-                    <a id="email-reveal-link" href="mailto:akashpai@stanford.edu" class="email-reveal-link" style="display: none;">akashpai [at] stanford [dot] edu</a>
+                <p class="reflections-controls">
+                    <button type="button" id="shuffle-reflections" class="shuffle-btn">Shuffle</button>
                 </p>
-                <p class="contact-line">
-                    <a href="https://x.com/akashashishpai" class="x-icon" aria-label="X"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                    <a href="https://linkedin.com/in/akash-pai" class="linkedin-icon" aria-label="LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
-                </p>
+                <p>Below is a growing list of my reverences in no particular order</p>
+                <ul id="reflections-list"></ul>
             </section>
         </div>
     </main>
 
     <footer>
-        <p>PST <span id="pst-clock"></span></p>
+        <p>PST <span id="pst-clock"></span><span id="footer-social">
+            <a href="https://x.com/akashashishpai" class="x-icon" aria-label="X"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="https://linkedin.com/in/akash-pai" class="linkedin-icon" aria-label="LinkedIn"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+            <img src="flag.png" alt="American flag" class="footer-flag">
+        </span></p>
     </footer>
 
     <script>
@@ -700,21 +709,93 @@
         })();
 
         (function() {
-            var trigger = document.getElementById('email-reveal-trigger');
-            var link = document.getElementById('email-reveal-link');
-            if (trigger && link) {
-                function reveal() {
-                    trigger.style.display = 'none';
-                    link.style.display = 'inline';
-                }
-                trigger.addEventListener('click', reveal);
-                trigger.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        reveal();
-                    }
+            var REVERENCES = [
+                'Guero, Portland',
+                'The University of Washington in 1936',
+                'Watching Gladiator, Top Gun, and The Shawshank Redemption with my Dad',
+                'Portland, OR to Mount Hood, OR, via highway 26 (late Feb - late March)',
+                'Skiing',
+                'Silicon',
+                'Deschutes whitewater rafting',
+                'Oostende',
+                'Brugge, partly because of Cedric',
+                'Taste of Sichuan, Portland',
+                'An academic’s devotion to teaching',
+                'Pete Buttigieg’s fielding of difficult questions',
+                'Bottega Louie, Los Angeles',
+                'Laura Wilson & Katie Pearson’s generosity',
+                'Cognitive consonant people with high agency',
+                'Forward-deployed hardware engineers',
+                'A story of humble beginnings',
+                'Extreme winds',
+                'Earnestness',
+                'The word “agnostic”',
+                'America',
+                'Boston summers',
+                'The Portland to Seattle Amtrak',
+                'La Taqueria’s Quesadilla, San Francisco',
+                'Fenway Park',
+                'Gothic cathedrals',
+                'The German countryside',
+                'Intel’s $40B revenue employee plaque',
+                'Small, entirely uppercase handwriting',
+                'Writing a sentence that reads how you envisioned it',
+                'Pilot Precise V5, in blue',
+                'The word “chop” (in maritime contexts)',
+                'Stanford University',
+                'Reminiscing',
+                'American farmers',
+                'Doug Leone’s approach to life',
+                'The Seahawks, The Trailblazers, The Argentina National Team, Barca',
+                'Runner’s high',
+                'Patriots (country-independent)',
+                'Science, the company',
+                '7',
+                'Mechanical engineers',
+                'Those who have served in law enforcement, the military, or as a first responder',
+                'The idea of retiring in the German countryside and working in ski patrol',
+                'Stifling laughter in serious moments',
+                'Simple business',
+                'Gain-share business models',
+                'Historical dramas',
+                'The phrase “for club and country”',
+                'Swiss punctuality',
+                'Full-stack service businesses',
+                'Polar Ice Extra Gum',
+                'Crispy mornings',
+                'The Ultimate Run',
+                'Sleeping'
+            ];
+            var list = document.getElementById('reflections-list');
+            var btn = document.getElementById('shuffle-reflections');
+            if (!list || !btn) return;
+
+            function renderReflections() {
+                var pick = shuffleArray(REVERENCES).slice(0, 10);
+                list.innerHTML = '';
+                pick.forEach(function(item) {
+                    var li = document.createElement('li');
+                    li.textContent = item;
+                    list.appendChild(li);
                 });
             }
+
+            btn.addEventListener('click', function() {
+                if (btn.disabled) return;
+                btn.disabled = true;
+                btn.classList.remove('shuffle-in');
+                btn.classList.add('shuffle-out');
+                setTimeout(function() { renderReflections(); }, 50);
+                setTimeout(function() {
+                    btn.disabled = false;
+                    btn.classList.remove('shuffle-out');
+                    btn.classList.add('shuffle-in');
+                    setTimeout(function() {
+                        btn.classList.remove('shuffle-in');
+                    }, 1000);
+                }, 2000);
+            });
+            renderReflections();
         })();
 
         function updatePstClock() {
@@ -736,9 +817,8 @@
         var TAB_LABELS = {
             home: 'Akash Pai',
             projects: 'Projects',
-            investing: 'Writing',
-            gallery: 'Life',
-            contact: 'Contact'
+            investing: 'Reflections',
+            gallery: 'Life'
         };
         function updatePrimaryLabelForTab(tabId) {
             if (!primaryTabLink) return;
@@ -784,6 +864,8 @@
                 var panel = document.getElementById('tab-' + tabId);
                 if (panel) panel.classList.add('active');
                 this.classList.add('active');
+                var footerSocial = document.getElementById('footer-social');
+                if (footerSocial) footerSocial.style.display = tabId === 'home' ? '' : 'none';
                 history.replaceState(null, '', '#' + tabId);
             });
         });
