@@ -261,15 +261,18 @@
         /* Reflections: intro text and Shuffle button share one row */
         .reflections-header {
             display: flex;
-            align-items: baseline;
+            align-items: flex-start;
             gap: 24px;
         }
         .reflections-intro {
             margin: 0;
             flex: 1;
         }
+        /* Match the intro's line box (1.4 x 1rem) so the button's text centers
+           on the first line in every browser — button baselines are unreliable. */
         .reflections-header .shuffle-btn {
             flex-shrink: 0;
+            line-height: 1.4rem;
         }
         #reflections-list {
             list-style-type: decimal;
